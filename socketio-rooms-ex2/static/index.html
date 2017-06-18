@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Socket.io</title>
+    </head>
+    <body>
+        <h1>Socket.io Rooms</h1>
+        <label for="name">Name:</label>
+        <input type="text" id="name" />
+        <button type="button" id="send">Say Hello!</button>
+
+        <label for="room">Room:</label>
+        <input type="text" id="room" />
+        <button type="button" id="join">Join Room</button>
+        
+
+        <ul id="list"></ul>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io({transports: ['websocket'], upgrade: false});
+            var addEvent = (message) => {
+                var li = document.createElement('li');
+               li.appendChild(document.createTextNode(message));
+               document.getElementById('list').appendChild(li);
+            };
+
+            document.getElementById('join').addEventListener('click', e => {
+                socket.emit('room.join', document.getElementById('room').value);
+            });
+
+            document.getElementById('send').addEventListener('click', e => {
+                socket.emit('event',
+                {
+                    name: document.getElementById('name').value,
+                    room: document.getElementById('room').value
+                });
+            });
+
+            socket.on('event', addEvent);
+        </script>
+    </body>
+</html>
