@@ -1,12 +1,16 @@
 const express = require('express'),
+    process = require('process'),
+    config = require('../config'),
+    socketioRedis = require('socket.io-redis')
     socketio = require('socket.io');
 
 const app = express();
-const server = app.listen(8080);
+const server = app.listen(process.argv[2]);
 const io = socketio(server);
 
 app.use(express.static('static'));
 
+io.adapter(socketioRedis({host: config.redisHost, port: config.redisPort}));
 io.on('connection', socket => {
    socket.on('room.join', room => {
      console.log(socket.rooms);
@@ -24,3 +28,7 @@ io.on('connection', socket => {
      socket.broadcast.to(e.room).emit('event', `${e.name} says Hello!`);
    });
 });
+
+
+
+
